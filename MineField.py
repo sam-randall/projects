@@ -4,6 +4,8 @@ import random
 import math
 import time
 
+BOARD_SIZE_n_rows = 20
+BOARD_SIZE_n_cols = 20
 def getRandomInBounds(bounds):
 	return random.randint(bounds[0][0], bounds[1][0]),random.randint(bounds[0][1], bounds[1][1])
 
@@ -14,7 +16,7 @@ def bernoulli(p):
 class Mines:
 
 	def __init__(self, num):
-		bounds =  ((0, 0), (20, 20))
+		bounds =  ((0, 0), (BOARD_SIZE_x, BOARD_SIZE_y))
 		self.mines = {}
 		self.bot = Bot()
 		self.bounds = bounds
@@ -26,15 +28,15 @@ class Mines:
 			self.bot.moveUp()
 	
 	def moveBotDown(self):
-		if self.bot.getLocation()[0] < 19:
+		if self.bot.getLocation()[0] < BOARD_SIZE_n_rows - 1:
 			self.bot.moveDown()
 
 	def moveBotLeft(self):
-		if self.bot.getLocation()[0] > 0:
+		if self.bot.getLocation()[1] > 0:
 			self.bot.moveLeft()
 
 	def moveBotRight(self):
-		if self.bot.getLocation()[0] < 19:
+		if self.bot.getLocation()[1] < BOARD_SIZE_n_cols - 1:
 			self.bot.moveRight()
 
 	def getBotLocation(self):
@@ -56,7 +58,7 @@ class Mines:
 			return self.mines
 
 	def getBoard(self):
-		a = [[0 for i in range(20)] for j in range(20)]
+		a = [[0 for i in range(BOARD_SIZE_n_cols)] for j in range(BOARD_SIZE_n_rows)]
 		for mine in self.mines:
 
 			low_x, low_y = mine[0]
@@ -69,7 +71,7 @@ class Mines:
 		return a
 	def __str__(self):
 		key = [" .", "..", " :", "::", " ;", ";;", " _", "__", " |", "||"]
-		a = [['  ' for i in range(20)] for j in range(20)]
+		a = [['  ' for i in range(BOARD_SIZE_n_cols)] for j in range(BOARD_SIZE_n_rows)]
 		for mine in self.mines:
 
 			low_x, low_y = mine[0]
@@ -78,7 +80,7 @@ class Mines:
 			prob = self.mines[mine]
 			for x in range(low_x, high_x):
 				for y in range(low_y, high_y):
-					a[x][y] = key[math.floor(prob * 10)]
+					a[x][y] = key[math.floor(prob * len(key))]
 		x, y = self.bot.getLocation()
 		a[x][y] = 'x'
 		s = ""
@@ -110,7 +112,8 @@ class Bot:
 
 def userPlay():
 
-	print("Try and make it across the mine field.  Press arrow keys to move. Your x is your bot. Probability of dying are listed with their symbols below.")
+	print("Try and make it across the mine field.  Press arrow keys to move. Your x is your bot.\
+	 Probability of dying are listed with their symbols below.")
 
 	print([(i /10, thing) for i, thing in enumerate([" .", "..", " :", "::", " ;", ";;", " _", "__", " |", "||"])])
 	print("Good luck!")
@@ -120,20 +123,17 @@ def userPlay():
 	board = i.getBoard()
 	while True:
 		print(i)
-		user = input()
-		LEFT = 68
-		UP = 65
-		RIGHT = 67
-		DOWN = 66
-		if len(user) == 3:
-			num = ord(user[-1])
-			if num == LEFT:
+		user = input("Make your next move: a, d, w, s")
+
+		if len(user) == 1:
+		
+			if user == "a":
 				i.moveBotLeft()
-			elif num == RIGHT:
+			elif user == "d":
 				i.moveBotRight()
-			elif num == UP:
+			elif user == "w":
 				i.moveBotUp()
-			elif num == DOWN:
+			elif user == "s":
 				i.moveBotDown()
 		row, col = i.getBotLocation()
 		if col == 19:
@@ -148,8 +148,11 @@ def userPlay():
 
 
 
+while True:
+	userPlay()
+	if input("Would you like to play again? y or n") != "y":
+		break
 
-userPlay()
 
 
 
